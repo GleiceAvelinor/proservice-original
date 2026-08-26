@@ -1,6 +1,7 @@
 """
 Settings de PRODUÇÃO — nunca use DEBUG=True em produção.
 """
+from pathlib import Path
 from .base import *  # noqa: F401, F403
 
 DEBUG = False
@@ -14,6 +15,10 @@ SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
+# Garante que o diretório de logs existe antes de configurar o logging para arquivo
+LOGS_DIR = BASE_DIR / "logs"  # noqa: F405
+LOGS_DIR.mkdir(exist_ok=True)
+
 # Logging para arquivo em produção
 LOGGING = {
     "version": 1,
@@ -21,7 +26,7 @@ LOGGING = {
     "handlers": {
         "file": {
             "class": "logging.FileHandler",
-            "filename": BASE_DIR / "logs" / "django.log",  # noqa: F405
+            "filename": LOGS_DIR / "django.log",
         },
     },
     "root": {
