@@ -7,3 +7,12 @@ redis
 python-decouple
 dj-database-url
 whitenoise
+django-crispy-forms
+crispy-bootstrap5
+pandas
+numpy
+openpyxl
+weasyprint
+reportlab
+xhtml2pdf
+fpdf2
