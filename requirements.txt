@@ -4,3 +4,6 @@ django-tenants
 psycopg2-binary
 celery
 redis
+python-decouple
+dj-database-url
+whitenoise
