@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}Proposta {{ proposta.numero }} — {{ current_tenant.name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2 pb-3 mb-4 border-bottom">
+    <div>
+        <h1 class="h2 fw-bold mb-0">Proposta {{ proposta.numero }}</h1>
+        <span class="badge bg-{{ proposta.get_status_badge_class }} fs-6 mt-2">
+            {{ proposta.get_status_display }}
+        </span>
+    </div>
+    <div class="btn-toolbar gap-2">
+        <a href="{% url 'propostas:pdf' proposta.pk %}" class="btn btn-danger">
+            <i class="bi bi-file-pdf me-1"></i> Baixar PDF
+        </a>
+        <a href="{% url 'propostas:editar' proposta.pk %}" class="btn btn-outline-primary">
+            <i class="bi bi-pencil me-1"></i> Editar
+        </a>
+        <a href="{% url 'propostas:excluir' proposta.pk %}" class="btn btn-outline-danger">
+            <i class="bi bi-trash me-1"></i> Excluir
+        </a>
+    </div>
+</div>
+
+<!-- Ações Rápidas de Status -->
+<div class="alert alert-light border shadow-sm d-flex align-items-center justify-content-between mb-4 rounded-3">
+    <div>
+        <strong>Alterar Status Rápido:</strong>
+    </div>
+    <div class="btn-group" role="group">
+        <a href="{% url 'propostas:mudar-status' proposta.pk 'PENDENTE' %}" class="btn btn-outline-warning btn-sm">Marcar Pendente</a>
+        <a href="{% url 'propostas:mudar-status' proposta.pk 'APROVADA' %}" class="btn btn-outline-success btn-sm">Aprovar Proposta</a>
+        <a href="{% url 'propostas:mudar-status' proposta.pk 'RECUSADA' %}" class="btn btn-outline-danger btn-sm">Recusar</a>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Cliente -->
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm rounded-3 h-100">
+            <div class="card-header bg-white py-3">
+                <h5 class="fw-bold mb-0 text-primary"><i class="bi bi-person me-2"></i>Cliente</h5>
+            </div>
+            <div class="card-body">
+                <h4 class="fw-bold">{{ proposta.cliente.nome }}</h4>
+                <p class="text-muted mb-1">CPF/CNPJ: {{ proposta.cliente.cpf_cnpj|default:"-" }}</p>
+                <p class="text-muted mb-1">E-mail: {{ proposta.cliente.email|default:"-" }}</p>
+                <p class="text-muted mb-1">Telefone: {{ proposta.cliente.telefone|default:"-" }}</p>
+                <p class="text-muted mb-0">Endereço: {{ proposta.cliente.endereco_completo|default:"-" }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detalhes da Proposta -->
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm rounded-3 h-100">
+            <div class="card-header bg-white py-3">
+                <h5 class="fw-bold mb-0 text-primary"><i class="bi bi-calendar-event me-2"></i>Datas e Pagamento</h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-2"><strong>Data de Emissão:</strong> {{ proposta.data_emissao|date:"d/m/Y" }}</p>
+                <p class="mb-2"><strong>Válida até:</strong> {{ proposta.data_validade|date:"d/m/Y"|default:"Sem data" }}</p>
+                <p class="mb-2"><strong>Condição de Pagamento:</strong> {{ proposta.condicao_pagamento|default:"Não especificado" }}</p>
+                <p class="mb-0"><strong>Desconto Aplicado:</strong> {{ proposta.desconto }}%</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabela de Itens -->
+<div class="card border-0 shadow-sm rounded-3 mb-4">
+    <div class="card-header bg-white py-3">
+        <h5 class="fw-bold mb-0">Itens e Serviços Incluídos</h5>
+    </div>
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Item / Descrição</th>
+                    <th class="text-center">Qtd</th>
+                    <th class="text-center">Unid</th>
+                    <th class="text-end">Preço Unit.</th>
+                    <th class="text-end">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in proposta.itens.all %}
+                    <tr>
+                        <td class="fw-semibold">{{ item.descricao }}</td>
+                        <td class="text-center">{{ item.quantidade }}</td>
+                        <td class="text-center">{{ item.unidade }}</td>
+                        <td class="text-end">R$ {{ item.preco_unitario|floatformat:2 }}</td>
+                        <td class="text-end fw-bold">R$ {{ item.total|floatformat:2 }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">Nenhum item cadastrado.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot class="table-light">
+                <tr>
+                    <td colspan="4" class="text-end fw-bold">Subtotal:</td>
+                    <td class="text-end fw-bold">R$ {{ proposta.subtotal|floatformat:2 }}</td>
+                </tr>
+                {% if proposta.desconto > 0 %}
+                    <tr class="text-danger">
+                        <td colspan="4" class="text-end fw-bold">Desconto ({{ proposta.desconto }}%):</td>
+                        <td class="text-end fw-bold">- R$ {{ proposta.valor_desconto|floatformat:2 }}</td>
+                    </tr>
+                {% endif %}
+                <tr class="fs-5 fw-bold text-primary">
+                    <td colspan="4" class="text-end">VALOR TOTAL:</td>
+                    <td class="text-end">R$ {{ proposta.total|floatformat:2 }}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+{% endblock %}

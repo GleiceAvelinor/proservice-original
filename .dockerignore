@@ -1,0 +1,25 @@
+# Git & Ide
+.git
+.gitignore
+.idea
+.vscode
+.gemini
+
+# Python & Environment
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.env
+
+# Media & Temp
+media/
+staticfiles/
+*.log
+*.sqlite3

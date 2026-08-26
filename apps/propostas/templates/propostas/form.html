@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ titulo }} — {{ current_tenant.name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center pt-2 pb-3 mb-4 border-bottom">
+    <h1 class="h2 fw-bold mb-0">{{ titulo }}</h1>
+    <a href="{% url 'propostas:lista' %}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i> Voltar
+    </a>
+</div>
+
+<form method="post" id="propostaForm">
+    {% csrf_token %}
+    
+    <!-- Dados Gerais da Proposta -->
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card-header bg-white py-3">
+            <h5 class="fw-bold mb-0 text-primary"><i class="bi bi-info-circle me-2"></i>Informações Principais</h5>
+        </div>
+        <div class="card-body">
+            {% crispy form %}
+        </div>
+    </div>
+
+    <!-- Itens da Proposta (Formset Inline) -->
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold mb-0 text-primary"><i class="bi bi-list-check me-2"></i>Itens da Proposta (Produtos / Serviços)</h5>
+        </div>
+        <div class="card-body">
+            {{ formset.management_form }}
+            <div class="table-responsive">
+                <table class="table align-middle" id="itensTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 15%;">Tipo</th>
+                            <th style="width: 35%;">Descrição do Item</th>
+                            <th style="width: 10%;">Qtd</th>
+                            <th style="width: 10%;">Unid</th>
+                            <th style="width: 15%;">Preço Unit. (R$)</th>
+                            <th style="width: 10%;">Excluir?</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for form_item in formset %}
+                            <tr class="item-row">
+                                <td>
+                                    {{ form_item.id }}
+                                    {{ form_item.tipo|as_crispy_field }}
+                                </td>
+                                <td>{{ form_item.descricao|as_crispy_field }}</td>
+                                <td>{{ form_item.quantidade|as_crispy_field }}</td>
+                                <td>{{ form_item.unidade|as_crispy_field }}</td>
+                                <td>{{ form_item.preco_unitario|as_crispy_field }}</td>
+                                <td>
+                                    {% if formset.can_delete %}
+                                        {{ form_item.DELETE }}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex gap-2 mb-5">
+        <button type="submit" class="btn btn-primary px-4 py-2 fw-bold">
+            <i class="bi bi-check-circle me-2"></i>Salvar Proposta
+        </button>
+        <a href="{% url 'propostas:lista' %}" class="btn btn-secondary px-4 py-2">Cancelar</a>
+    </div>
+</form>
+{% endblock %}

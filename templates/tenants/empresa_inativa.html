@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso Suspenso — {{ tenant.name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .card-suspended {
+            max-width: 520px;
+            border-radius: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container p-3">
+        <div class="card border-0 shadow-lg card-suspended mx-auto text-center p-4 p-md-5 bg-white">
+            <div class="mb-3">
+                {% if tenant and tenant.logo %}
+                    <img src="{{ tenant.logo.url }}" alt="{{ tenant.name }}" height="60" class="mb-3 rounded">
+                {% else %}
+                    <div class="bg-danger bg-opacity-10 text-danger rounded-circle p-3 d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
+                        <i class="bi bi-shield-x fs-1"></i>
+                    </div>
+                {% endif %}
+                <h3 class="fw-bold text-dark mb-1">{{ tenant.name|default:"Empresa" }}</h3>
+                <span class="badge bg-danger-subtle text-danger fw-semibold px-3 py-1 rounded-pill small">Conta Desativada</span>
+            </div>
+
+            <h4 class="fw-bold text-dark mb-2">Acesso Temporariamente Suspenso</h4>
+            <p class="text-muted small leading-relaxed mb-4">
+                O acesso ao painel desta empresa foi desativado pelo Administrador do SaaS. Se você é o gestor desta empresa, entre em contato com o suporte para regularizar seu acesso.
+            </p>
+
+            <div class="alert alert-light border rounded-3 text-start small text-muted mb-4">
+                <i class="bi bi-info-circle text-primary me-2"></i> Identificador da Empresa: <strong>{{ tenant.schema_name }}</strong>
+            </div>
+
+            <div class="d-grid gap-2">
+                <a href="http://localhost:8000/signup/acessar/" class="btn btn-outline-secondary rounded-pill py-2 fw-semibold">
+                    <i class="bi bi-arrow-left me-1"></i> Voltar ao Portal de Acesso
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

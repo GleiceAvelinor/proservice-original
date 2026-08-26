@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Empresa Ativada com Sucesso!{% endblock %}
+
+{% block full_content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 text-center">
+            <div class="card border-0 shadow-lg rounded-4 p-4 p-md-5 bg-white">
+                <div class="mb-3">
+                    <div class="bg-success bg-opacity-10 text-success rounded-circle p-3 d-inline-flex align-items-center justify-content-center mb-2" style="width: 75px; height: 75px;">
+                        <i class="bi bi-check-circle-fill fs-1"></i>
+                    </div>
+                </div>
+
+                <span class="badge bg-success-subtle text-success fw-bold px-3 py-2 rounded-pill mb-3">Ativação Concluída</span>
+
+                <h2 class="fw-bold text-dark mb-2">Empresa Liberada!</h2>
+                <p class="text-muted leading-relaxed mb-4">
+                    A empresa <strong>{{ tenant.name }}</strong> foi ativada pelo Administrador Master. O subdomínio exclusivo já está liberado para o primeiro acesso.
+                </p>
+
+                <div class="alert alert-success border-0 rounded-3 text-start small mb-4">
+                    <i class="bi bi-globe me-1"></i> Endereço do seu Painel:
+                    <strong class="d-block text-break mt-1 fs-6">http://{{ domain_name }}:8000/accounts/login/</strong>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <a href="http://{{ domain_name }}:8000/accounts/login/" class="btn btn-success btn-lg rounded-pill py-3 fw-bold shadow-sm">
+                        <i class="bi bi-box-arrow-in-right me-2"></i> Acessar Painel de Login da Empresa
+                    </a>
+                    <a href="{% url 'landing' %}" class="btn btn-link text-muted text-decoration-none small mt-2">
+                        Voltar à Página Inicial
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

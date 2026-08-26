@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ titulo }} — Proposta Comercial{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2 pb-3 mb-4 border-bottom">
+    <div>
+        <h1 class="h2 fw-bold mb-0">{{ titulo }}</h1>
+        <p class="text-muted small mb-0">Preencha os dados gerais e adicione os produtos/serviços</p>
+    </div>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'propostas:lista' %}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i> Cancelar
+        </a>
+    </div>
+</div>
+
+<form method="post" id="proposta-form">
+    {% csrf_token %}
+
+    <!-- Dados da Proposta -->
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card-header bg-white py-3 border-bottom-0">
+            <h5 class="fw-bold mb-0"><i class="bi bi-file-earmark-text text-primary me-2"></i>Informações Principais</h5>
+        </div>
+        <div class="card-body pt-0">
+            {% crispy form %}
+        </div>
+    </div>
+
+    <!-- Formset de Itens -->
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom-0">
+            <h5 class="fw-bold mb-0"><i class="bi bi-boxes text-primary me-2"></i>Itens da Proposta (Produtos & Serviços)</h5>
+            <button type="button" class="btn btn-sm btn-outline-primary" id="btn-adicionar-item">
+                <i class="bi bi-plus-lg me-1"></i> Adicionar Outro Item
+            </button>
+        </div>
+        <div class="card-body p-0">
+            {{ formset.management_form }}
+            {% if formset.non_form_errors %}
+                <div class="alert alert-danger m-3">
+                    {{ formset.non_form_errors }}
+                </div>
+            {% endif %}
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="formset-table">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 20%;">Produto</th>
+                            <th style="width: 20%;">Serviço</th>
+                            <th style="width: 25%;">Descrição / Nome</th>
+                            <th style="width: 10%;">Qtd</th>
+                            <th style="width: 15%;">Preço Unit. (R$)</th>
+                            <th style="width: 10%;" class="text-end">Remover</th>
+                        </tr>
+                    </thead>
+                    <tbody id="formset-body">
+                        {% for item_form in formset %}
+                            <tr class="formset-row">
+                                {% for hidden in item_form.hidden_fields %}
+                                    {{ hidden }}
+                                {% endfor %}
+                                <td>
+                                    {{ item_form.produto }}
+                                    {% if item_form.produto.errors %}<div class="text-danger small">{{ item_form.produto.errors }}</div>{% endif %}
+                                </td>
+                                <td>
+                                    {{ item_form.servico }}
+                                    {% if item_form.servico.errors %}<div class="text-danger small">{{ item_form.servico.errors }}</div>{% endif %}
+                                </td>
+                                <td>
+                                    {{ item_form.descricao }}
+                                    {% if item_form.descricao.errors %}<div class="text-danger small">{{ item_form.descricao.errors }}</div>{% endif %}
+                                </td>
+                                <td>
+                                    {{ item_form.quantidade }}
+                                    {% if item_form.quantidade.errors %}<div class="text-danger small">{{ item_form.quantidade.errors }}</div>{% endif %}
+                                </td>
+                                <td>
+                                    {{ item_form.preco_unitario }}
+                                    {% if item_form.preco_unitario.errors %}<div class="text-danger small">{{ item_form.preco_unitario.errors }}</div>{% endif %}
+                                </td>
+                                <td class="text-end">
+                                    {% if item_form.DELETE %}
+                                        <div class="d-none">
+                                            {{ item_form.DELETE }}
+                                        </div>
+                                    {% endif %}
+                                    <button type="button" class="btn btn-outline-danger btn-sm btn-remover-linha" title="Remover item">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botões de Ação Final -->
+    <div class="d-flex justify-content-end gap-3 mb-5">
+        <a href="{% url 'propostas:lista' %}" class="btn btn-outline-secondary px-4">Cancelar</a>
+        <button type="submit" class="btn btn-primary px-5 fw-bold py-2">
+            <i class="bi bi-check-circle me-2"></i>Salvar Proposta Comercial
+        </button>
+    </div>
+</form>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    function aplicarEstilosInputs() {
+        document.querySelectorAll("#formset-table select").forEach(select => select.classList.add("form-select", "form-select-sm"));
+        document.querySelectorAll("#formset-table input[type='number'], #formset-table input[type='text']").forEach(input => input.classList.add("form-control", "form-control-sm"));
+    }
+    aplicarEstilosInputs();
+
+    // Event listener seguro para remover linha
+    document.addEventListener("click", function(e) {
+        if (e.target.closest(".btn-remover-linha")) {
+            const row = e.target.closest("tr");
+            const deleteCheckbox = row.querySelector("input[name$='-DELETE']");
+
+            if (deleteCheckbox) {
+                // Se é um item salvo no banco, marca o checkbox de DELETE e esconde a linha
+                deleteCheckbox.checked = true;
+                row.style.display = "none";
+            } else {
+                // Se é uma linha adicionada dinamicamente, limpa os campos e esconde
+                row.querySelectorAll("input, select").forEach(input => input.value = "");
+                row.style.display = "none";
+            }
+        }
+    });
+
+    // Adicionar nova linha dinamicamente
+    const btnAdd = document.getElementById("btn-adicionar-item");
+    const totalFormsInput = document.getElementById("id_itens-TOTAL_FORMS");
+    
+    if (btnAdd && totalFormsInput) {
+        btnAdd.addEventListener("click", function() {
+            const formsetBody = document.getElementById("formset-body");
+            const currentRows = document.querySelectorAll(".formset-row");
+            const formCount = parseInt(totalFormsInput.value);
+
+            if (currentRows.length > 0) {
+                const newRow = currentRows[0].cloneNode(true);
+                newRow.style.display = ""; // Garante visibilidade
+                
+                // Atualiza os atributos name e id para o novo índice
+                newRow.innerHTML = newRow.innerHTML.replace(/itens-\d+-/g, `itens-${formCount}-`);
+                
+                // Limpa os valores dos inputs clonados
+                newRow.querySelectorAll("input, select").forEach(input => {
+                    if (input.type === "checkbox") {
+                        input.checked = false;
+                    } else if (input.name.includes("quantidade")) {
+                        input.value = "1.00";
+                    } else {
+                        input.value = "";
+                    }
+                });
+
+                formsetBody.appendChild(newRow);
+                totalFormsInput.value = formCount + 1;
+                aplicarEstilosInputs();
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+
+{% block title %}ProService — Gestão Inteligente para Prestadores de Serviços{% endblock %}
+
+{% block extra_head %}
+<style>
+  .hero-badge {
+    background: rgba(13, 110, 253, 0.08);
+    border: 1px solid rgba(13, 110, 253, 0.2);
+    display: inline-flex;
+    align-items: center;
+    padding: 0.4rem 1rem;
+    border-radius: 50rem;
+  }
+  .card-hover {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.08) !important;
+  }
+  .feature-icon {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .pricing-card {
+    border: 2px solid #0d6efd;
+  }
+</style>
+{% endblock %}
+
+{% block full_content %}
+<!-- Hero Section -->
+<section class="py-5 mt-3 mb-3" aria-label="Apresentação principal">
+  <div class="container text-center">
+    <div class="hero-badge mb-4">
+      <span class="badge bg-primary rounded-pill me-2">Novo</span>
+      <span class="text-primary fw-semibold small">Plataforma Completa de Gestão</span>
+    </div>
+
+    <h1 class="display-3 fw-extrabold text-dark tracking-tight mb-3">
+      ProService
+    </h1>
+    <div class="col-lg-7 mx-auto">
+      <p class="lead mb-5 text-secondary fs-5">
+        Centralize a operação da sua prestadora de serviços em um só lugar. Automatize orçamentos, controle seu estoque e acompanhe o financeiro com uma plataforma robusta e 100% segura.
+      </p>
+      
+      <!-- Botão 1: Direciona para o formulário de cadastro interno -->
+      <div class="d-grid gap-3 d-sm-flex justify-content-sm-center mb-5">
+        <a href="{% url 'signup:signup' %}" class="btn btn-primary btn-lg px-5 py-3 rounded-pill fw-semibold shadow" aria-label="Cadastrar empresa e começar a usar a plataforma ProService">
+          <i class="bi bi-rocket-takeoff-fill me-2" aria-hidden="true"></i>Bora Começar!
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Seção de Recursos -->
+<section class="bg-light py-5 rounded-5 my-4" aria-labelledby="recursos-heading">
+  <div class="container px-4 py-3" id="icon-grid">
+    <div class="text-center mb-5 col-lg-8 mx-auto">
+      <h2 id="recursos-heading" class="fw-bold display-6 mb-2">Tudo que sua operação precisa</h2>
+      <p class="text-muted">Recursos pensados para organizar, profissionalizar e escalar o seu negócio.</p>
+    </div>
+    
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4 py-2">
+      <div class="col">
+        <div class="card h-100 border-0 shadow-sm rounded-4 p-4 text-start card-hover bg-white">
+          <div class="feature-icon bg-primary bg-opacity-10 text-primary mb-3" aria-hidden="true">
+            <i class="bi bi-shield-check fs-3"></i>
+          </div>
+          <h3 class="fw-bold mb-2 fs-5">Privacidade Total</h3>
+          <p class="text-muted small mb-0">Banco de dados exclusivo para a sua empresa, garantindo segurança e isolamento absoluto.</p>
+        </div>
+      </div>
+      
+      <div class="col">
+        <div class="card h-100 border-0 shadow-sm rounded-4 p-4 text-start card-hover bg-white">
+          <div class="feature-icon bg-danger bg-opacity-10 text-danger mb-3" aria-hidden="true">
+            <i class="bi bi-file-earmark-pdf fs-3"></i>
+          </div>
+          <h3 class="fw-bold mb-2 fs-5">Propostas em PDF</h3>
+          <p class="text-muted small mb-0">Gere orçamentos profissionais e personalizados com a sua identidade visual em poucos cliques.</p>
+        </div>
+      </div>
+      
+      <div class="col">
+        <div class="card h-100 border-0 shadow-sm rounded-4 p-4 text-start card-hover bg-white">
+          <div class="feature-icon bg-success bg-opacity-10 text-success mb-3" aria-hidden="true">
+            <i class="bi bi-graph-up-arrow fs-3"></i>
+          </div>
+          <h3 class="fw-bold mb-2 fs-5">Visão Financeira</h3>
+          <p class="text-muted small mb-0">Acompanhe métricas essenciais como faturamento mensal e margem de lucro no seu painel.</p>
+        </div>
+      </div>
+      
+      <div class="col">
+        <div class="card h-100 border-0 shadow-sm rounded-4 p-4 text-start card-hover bg-white">
+          <div class="feature-icon bg-warning bg-opacity-10 text-warning mb-3" aria-hidden="true">
+            <i class="bi bi-box-seam fs-3"></i>
+          </div>
+          <h3 class="fw-bold mb-2 fs-5">Estoque Inteligente</h3>
+          <p class="text-muted small mb-0">Controle rigoroso de produtos e serviços, com alertas de estoque crítico e precificação.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Seção de Preços -->
+<section id="planos" class="py-5 mb-5" aria-labelledby="planos-heading">
+  <div class="container px-4">
+    <div class="text-center mb-5">
+      <h2 id="planos-heading" class="fw-bold display-6 mb-2">Plano Único, Simples e Transparente</h2>
+      <p class="text-muted">Acesso completo a todas as ferramentas sem taxas ocultas ou surpresas.</p>
+    </div>
+    
+    <div class="row justify-content-center">
+      <div class="col-lg-5 col-md-8">
+        <div class="card pricing-card shadow-lg rounded-4 text-center position-relative overflow-hidden">
+          <div class="bg-primary text-white py-2 fw-bold text-uppercase tracking-wide small">
+            Acesso Ilimitado
+          </div>
+          <div class="card-body p-5">
+            <h3 class="card-title fw-bold">ProService Pro</h3>
+            <div class="my-4">
+              <span class="fs-1 fw-extrabold text-dark" aria-label="59 reais e 90 centavos">R$ 59,90</span>
+              <span class="text-muted">/mês</span>
+            </div>
+            
+            <ul class="list-unstyled text-start mb-5 mx-auto" style="max-width: 280px;">
+              <li class="mb-3"><i class="bi bi-check-circle-fill text-primary me-2" aria-hidden="true"></i> Isolamento de dados por empresa</li>
+              <li class="mb-3"><i class="bi bi-check-circle-fill text-primary me-2" aria-hidden="true"></i> Orçamentos ilimitados em PDF</li>
+              <li class="mb-3"><i class="bi bi-check-circle-fill text-primary me-2" aria-hidden="true"></i> Controle de estoque e catálogo</li>
+              <li class="mb-3"><i class="bi bi-check-circle-fill text-primary me-2" aria-hidden="true"></i> Dashboard financeiro completo</li>
+              <li class="mb-3"><i class="bi bi-check-circle-fill text-primary me-2" aria-hidden="true"></i> Suporte técnico especializado</li>
+            </ul>
+            
+            <!-- Botão 2: Direciona diretamente para o WhatsApp de vendas/suporte -->
+            <a href="https://wa.me/5585999999999?text=Olá!%20Gostaria%20de%20assinar%20o%20plano%20ProService%20por%20R$%2059,90/mês." 
+               target="_blank" 
+               rel="noopener noreferrer"
+               class="btn btn-success btn-lg w-100 rounded-pill fw-semibold shadow-sm py-3 d-flex align-items-center justify-content-center"
+               aria-label="Comprar plano ProService via WhatsApp (abre em nova aba)">
+              <i class="bi bi-whatsapp me-2 fs-5" aria-hidden="true"></i>Comprar via WhatsApp
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Rodapé / Footer -->
+<footer class="bg-dark text-white pt-5 pb-4 mt-auto rounded-top-4" aria-label="Rodapé do site">
+  <div class="container px-4">
+    <div class="row g-4 mb-4">
+      <div class="col-lg-5 col-md-6">
+        <div class="d-flex align-items-center mb-3">
+          <i class="bi bi-layers-fill text-primary fs-3 me-2" aria-hidden="true"></i>
+          <span class="fs-4 fw-bold">ProService</span>
+        </div>
+        <p class="text-secondary small col-lg-10">
+          Solução em gestão comercial e operacional multi-tenant para prestadores de serviços. Isolamento de dados, controle financeiro e orçamentos agilizados.
+        </p>
+      </div>
+      
+      <div class="col-lg-3 col-md-6 ms-auto">
+        <h2 class="fw-bold mb-3 text-light fs-6">Navegação Rápida</h2>
+        <ul class="list-unstyled text-secondary small">
+          <li class="mb-2"><a href="{% url 'signup:signup' %}" class="text-decoration-none text-secondary"><i class="bi bi-chevron-right me-1 small" aria-hidden="true"></i> Cadastrar Empresa</a></li>
+          <li class="mb-2"><a href="{% url 'signup:portal_acesso' %}" class="text-decoration-none text-secondary"><i class="bi bi-chevron-right me-1 small" aria-hidden="true"></i> Área de Login</a></li>
+          <li class="mb-2"><a href="#planos" class="text-decoration-none text-secondary"><i class="bi bi-chevron-right me-1 small" aria-hidden="true"></i> Plano & Preço</a></li>
+        </ul>
+      </div>
+
+      <div class="col-lg-3 col-md-6">
+        <h2 class="fw-bold mb-3 text-light fs-6">Atendimento</h2>
+        <p class="text-secondary small mb-2"><i class="bi bi-envelope me-2 text-primary" aria-hidden="true"></i>contato@proservice.com.br</p>
+        <p class="text-secondary small mb-3"><i class="bi bi-whatsapp me-2 text-success" aria-hidden="true"></i>(85) 99437-8208</p>
+      </div>
+    </div>
+
+    <hr class="border-secondary opacity-25 my-4">
+
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center text-secondary small">
+      <p class="mb-2 mb-sm-0">&copy; 2026 ProService SaaS. Todos os direitos reservados.</p>
+      <div class="d-flex gap-3">
+        <span class="badge bg-secondary bg-opacity-25 text-secondary">v1.0.0</span>
+      </div>
+    </div>
+  </div>
+</footer>
+{% endblock %}

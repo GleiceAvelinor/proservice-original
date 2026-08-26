@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Cadastro Realizado — Aguardando Ativação{% endblock %}
+
+{% block full_content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 text-center">
+            <div class="card border-0 shadow-lg rounded-4 p-4 p-md-5 bg-white">
+                <div class="mb-3">
+                    <div class="bg-warning bg-opacity-10 text-warning rounded-circle p-3 d-inline-flex align-items-center justify-content-center mb-2" style="width: 70px; height: 70px;">
+                        <i class="bi bi-clock-history fs-1"></i>
+                    </div>
+                </div>
+
+                <span class="badge bg-warning-subtle text-warning-emphasis fw-bold px-3 py-2 rounded-pill mb-3">Cadastro Pendente de Aprovação</span>
+
+                <h2 class="fw-bold text-dark mb-2">Empresa Cadastrada com Sucesso!</h2>
+                <p class="text-muted leading-relaxed mb-4">
+                    O ambiente da empresa <strong>{{ tenant_name }}</strong> foi criado. Para garantir a segurança da plataforma, a ativação do seu subdomínio necessita da autorização do <strong>Administrador Master</strong>.
+                </p>
+
+                <div class="alert alert-info border-0 rounded-3 text-start small mb-4">
+                    <div class="fw-bold mb-1"><i class="bi bi-info-circle me-1"></i> O que acontece agora?</div>
+                    <ul class="mb-0 ps-3">
+                        <li>O Administrador Master recebeu a notificação de novo cadastro.</li>
+                        <li>Você receberá o link de liberação e ativação via <strong>E-mail</strong> ou <strong>WhatsApp</strong>.</li>
+                        <li>Após a liberação, seu subdomínio <code>{{ domain_name }}</code> estará 100% pronto para uso.</li>
+                    </ul>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <a href="{% url 'landing' %}" class="btn btn-outline-primary rounded-pill py-2 fw-semibold">
+                        <i class="bi bi-house me-1"></i> Voltar à Página Inicial
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

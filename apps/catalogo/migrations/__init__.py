@@ -1,0 +1,1 @@
+# catalogo migrations package

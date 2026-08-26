@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ titulo }} — Produtos{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2 pb-3 mb-4 border-bottom">
+    <div>
+        <h1 class="h2 fw-bold mb-0">{{ titulo }}</h1>
+        <p class="text-muted small mb-0">Cadastre ou edite as especificações do produto</p>
+    </div>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'catalogo:produtos' %}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i> Cancelar
+        </a>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-3">
+    <div class="card-body p-4">
+        {% crispy form %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block title %}Clientes — {{ current_tenant.name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2 pb-3 mb-4 border-bottom">
+    <div>
+        <h1 class="h2 fw-bold mb-0">Gestão de Clientes</h1>
+        <p class="text-muted small mb-0">Total de {{ total }} cliente(s) cadastrado(s)</p>
+    </div>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'clientes:criar' %}" class="btn btn-primary">
+            <i class="bi bi-person-plus me-1"></i> Novo Cliente
+        </a>
+    </div>
+</div>
+
+<!-- Barra de Busca -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-3">
+        <form method="get" class="row g-2 align-items-center">
+            <div class="col-12 col-md-9">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" name="q" value="{{ q }}" class="form-control border-start-0 bg-light" placeholder="Buscar por nome do cliente...">
+                </div>
+            </div>
+            <div class="col-12 col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-secondary w-100"><i class="bi bi-filter me-1"></i>Buscar</button>
+                {% if q %}
+                    <a href="{% url 'clientes:lista' %}" class="btn btn-outline-secondary" title="Limpar busca"><i class="bi bi-x-lg"></i></a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Tabela de Clientes -->
+<div class="card border-0 shadow-sm rounded-3">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Nome</th>
+                    <th>Tipo</th>
+                    <th>CPF/CNPJ</th>
+                    <th>Contato</th>
+                    <th>Cidade/UF</th>
+                    <th>Status</th>
+                    <th class="text-end">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cliente in clientes %}
+                    <tr>
+                        <td class="fw-semibold">
+                            <a href="{% url 'clientes:detalhe' cliente.pk %}" class="text-decoration-none text-dark">
+                                {{ cliente.nome }}
+                            </a>
+                        </td>
+                        <td>
+                            <span class="badge {% if cliente.tipo == 'PJ' %}bg-info-subtle text-info{% else %}bg-secondary-subtle text-secondary{% endif %}">
+                                {{ cliente.get_tipo_display }}
+                            </span>
+                        </td>
+                        <td class="text-muted small">{{ cliente.cpf_cnpj|default:"-" }}</td>
+                        <td>
+                            <div><i class="bi bi-telephone me-1 text-muted"></i>{{ cliente.telefone|default:"-" }}</div>
+                            <div class="text-muted small"><i class="bi bi-envelope me-1"></i>{{ cliente.email|default:"-" }}</div>
+                        </td>
+                        <td>
+                            {% if cliente.cidade %}
+                                {{ cliente.cidade }}/{{ cliente.estado }}
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if cliente.ativo %}
+                                <span class="badge bg-success-subtle text-success">Ativo</span>
+                            {% else %}
+                                <span class="badge bg-danger-subtle text-danger">Inativo</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm">
+                                <a href="{% url 'clientes:detalhe' cliente.pk %}" class="btn btn-outline-secondary" title="Ver Detalhes">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{% url 'clientes:editar' cliente.pk %}" class="btn btn-outline-primary" title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="{% url 'clientes:excluir' cliente.pk %}" class="btn btn-outline-danger" title="Excluir">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-5">
+                            <i class="bi bi-people fs-1 d-block mb-2 text-secondary"></i>
+                            Nenhum cliente encontrado.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Paginação -->
+{% if is_paginated %}
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page=1{% if q %}&q={{ q }}{% endif %}">&laquo; Primeiras</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}">Anterior</a></li>
+            {% endif %}
+
+            <li class="page-item active"><span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span></li>
+
+            {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}">Próxima</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if q %}&q={{ q }}{% endif %}">Última &raquo;</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endif %}
+{% endblock %}

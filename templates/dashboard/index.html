@@ -1,0 +1,362 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard — {{ current_tenant.name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-1 pb-3 mb-4 border-bottom">
+    <div>
+        <h1 class="h3 fw-bold mb-1 text-dark">Dashboard</h1>
+        <p class="text-muted small mb-0">Visão geral do desempenho da <strong>{{ current_tenant.name }}</strong></p>
+    </div>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'propostas:criar' %}" class="btn btn-primary shadow-sm px-3">
+            <i class="bi bi-plus-lg me-1"></i> Nova Proposta
+        </a>
+    </div>
+</div>
+
+{% if not onboarding_completo %}
+<!-- Card de Onboarding e Boas-Vindas -->
+<div class="card border-0 shadow-sm rounded-4 mb-4 bg-gradient-primary text-white p-4" style="background: linear-gradient(135deg, #1e293b 0%, #3b82f6 100%);">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
+        <div>
+            <span class="badge bg-white text-primary fw-bold mb-2">Primeiros Passos</span>
+            <h4 class="fw-bold mb-1"><i class="bi bi-rocket-takeoff me-2"></i>Bem-vindo(a) ao seu Painel, {{ current_tenant.name }}!</h4>
+            <p class="text-white-50 mb-0 small">Complete a configuração inicial para emitir propostas profissionais em segundos.</p>
+        </div>
+        <div class="text-end">
+            <span class="fs-3 fw-bold">{{ onboarding_progresso }}%</span>
+            <div class="progress mt-1" style="width: 120px; height: 8px;">
+                <div class="progress-bar bg-warning" role="progressbar" style="width: {{ onboarding_progresso }}%;" aria-valuenow="{{ onboarding_progresso }}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+        </div>
+    </div>
+    <div class="row g-2 mt-1">
+        <div class="col-md-3">
+            <a href="{% url 'tenants:empresa-config' %}" class="btn btn-sm {% if has_logo %}btn-light text-success fw-bold{% else %}btn-outline-light{% endif %} w-100 text-start py-2">
+                <i class="bi {% if has_logo %}bi-check-circle-fill text-success{% else %}bi-circle{% endif %} me-2"></i> 1. Dados & Logo
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{% url 'clientes:criar' %}" class="btn btn-sm {% if has_clientes %}btn-light text-success fw-bold{% else %}btn-outline-light{% endif %} w-100 text-start py-2">
+                <i class="bi {% if has_clientes %}bi-check-circle-fill text-success{% else %}bi-circle{% endif %} me-2"></i> 2. Novo Cliente
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{% url 'catalogo:servico-criar' %}" class="btn btn-sm {% if has_catalogo %}btn-light text-success fw-bold{% else %}btn-outline-light{% endif %} w-100 text-start py-2">
+                <i class="bi {% if has_catalogo %}bi-check-circle-fill text-success{% else %}bi-circle{% endif %} me-2"></i> 3. Catálogo de Itens
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{% url 'propostas:criar' %}" class="btn btn-sm {% if has_propostas %}btn-light text-success fw-bold{% else %}btn-outline-light{% endif %} w-100 text-start py-2">
+                <i class="bi {% if has_propostas %}bi-check-circle-fill text-success{% else %}bi-circle{% endif %} me-2"></i> 4. Primeira Proposta
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Cards KPI (Visão Geral) -->
+<div class="row g-3 g-md-4 mb-4">
+    <!-- Card Faturamento Aprovado -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <a href="{% url 'propostas:lista' %}?status=APROVADA" class="text-decoration-none">
+            <div class="card border border-light-subtle shadow-sm rounded-3 p-3 h-100 bg-white card-hover">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon bg-success-subtle text-success me-3 rounded-3">
+                        <i class="bi bi-currency-dollar fs-4"></i>
+                    </div>
+                    <div>
+                        <span class="text-muted small fw-medium d-block">Faturamento Aprovado</span>
+                        <span class="fs-4 fw-bold text-dark">R$ {{ faturamento_total|floatformat:2 }}</span>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Card Faturamento Pendente -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <a href="{% url 'propostas:lista' %}?status=PENDENTE" class="text-decoration-none">
+            <div class="card border border-light-subtle shadow-sm rounded-3 p-3 h-100 bg-white card-hover">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon bg-warning-subtle text-warning me-3 rounded-3">
+                        <i class="bi bi-clock-history fs-4"></i>
+                    </div>
+                    <div>
+                        <span class="text-muted small fw-medium d-block">Propostas Em Aberto</span>
+                        <span class="fs-4 fw-bold text-dark">R$ {{ faturamento_pendente|floatformat:2 }}</span>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Card Clientes -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <a href="{% url 'clientes:lista' %}" class="text-decoration-none">
+            <div class="card border border-light-subtle shadow-sm rounded-3 p-3 h-100 bg-white card-hover">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon bg-primary-subtle text-primary me-3 rounded-3">
+                        <i class="bi bi-people fs-4"></i>
+                    </div>
+                    <div>
+                        <span class="text-muted small fw-medium d-block">Clientes Ativos</span>
+                        <span class="fs-4 fw-bold text-dark">{{ total_clientes }}</span>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Card Conversão -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <a href="{% url 'propostas:lista' %}" class="text-decoration-none">
+            <div class="card border border-light-subtle shadow-sm rounded-3 p-3 h-100 bg-white card-hover">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon bg-info-subtle text-info me-3 rounded-3">
+                        <i class="bi bi-graph-up text-info fs-4"></i>
+                    </div>
+                    <div>
+                        <span class="text-muted small fw-medium d-block">Taxa de Conversão</span>
+                        <span class="fs-4 fw-bold text-dark">{{ taxa_conversao }}%</span>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<!-- Seção de Gráficos Interativos -->
+<div class="row g-4 mb-4">
+    <!-- Gráfico 1: Evolução do Faturamento Mensal -->
+    <div class="col-12 col-lg-8">
+        <div class="card border border-light-subtle shadow-sm rounded-3 h-100 bg-white">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom-0">
+                <div>
+                    <h6 class="fw-bold mb-0 text-dark">Evolução do Faturamento</h6>
+                    <span class="text-muted small">Propostas aprovadas (últimos 6 meses)</span>
+                </div>
+                <span class="badge bg-primary-subtle text-primary fw-medium px-2 py-1">Mensal</span>
+            </div>
+            <div class="card-body pt-0 pb-3">
+                <div style="height: 260px; position: relative;">
+                    <canvas id="faturamentoChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráfico 2: Distribuição de Propostas por Status -->
+    <div class="col-12 col-lg-4">
+        <div class="card border border-light-subtle shadow-sm rounded-3 h-100 bg-white">
+            <div class="card-header bg-white py-3 border-bottom-0">
+                <h6 class="fw-bold mb-0 text-dark">Status das Propostas</h6>
+                <span class="text-muted small">Distribuição geral</span>
+            </div>
+            <div class="card-body pt-0 pb-3 d-flex align-items-center justify-content-center">
+                <div style="height: 240px; width: 100%; position: relative;">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Seção Inferior: Propostas Recentes + Alertas de Estoque -->
+<div class="row g-4">
+    <!-- Tabela Propostas Recentes -->
+    <div class="col-12 col-lg-8">
+        <div class="card border border-light-subtle shadow-sm rounded-3 bg-white">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom-0">
+                <h6 class="fw-bold mb-0 text-dark">Propostas Recentes</h6>
+                <a href="{% url 'propostas:lista' %}" class="btn btn-link btn-sm text-decoration-none p-0 fw-semibold">
+                    Ver todas <i class="bi bi-chevron-right small"></i>
+                </a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr class="small text-muted">
+                            <th>NÚMERO</th>
+                            <th>CLIENTE</th>
+                            <th>DATA</th>
+                            <th>VALOR</th>
+                            <th>STATUS</th>
+                            <th class="text-end">AÇÕES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in propostas_recentes %}
+                            <tr>
+                                <td class="fw-semibold text-dark">{{ p.numero }}</td>
+                                <td>{{ p.cliente.nome }}</td>
+                                <td class="text-muted small">{{ p.data_emissao|date:"d/m/Y" }}</td>
+                                <td class="fw-bold text-dark">R$ {{ p.total|floatformat:2 }}</td>
+                                <td>
+                                    <span class="badge bg-{{ p.get_status_badge_class }} rounded-2">
+                                        {{ p.get_status_display }}
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <a href="{% url 'propostas:pdf' p.pk %}" class="btn btn-sm btn-outline-secondary border-0" title="Baixar PDF" target="_blank">
+                                        <i class="bi bi-file-pdf text-danger"></i>
+                                    </a>
+                                    <a href="{% url 'propostas:detalhe' p.pk %}" class="btn btn-sm btn-outline-secondary border-0" title="Ver Detalhes">
+                                        <i class="bi bi-eye text-primary"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-4 small">Nenhuma proposta cadastrada ainda.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card Alerta de Estoque -->
+    <div class="col-12 col-lg-4">
+        <div class="card border border-light-subtle shadow-sm rounded-3 bg-white h-100">
+            <div class="card-header bg-white py-3 border-bottom-0 d-flex justify-content-between align-items-center">
+                <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-box-seam me-2 text-primary"></i>Alerta de Estoque</h6>
+                <a href="{% url 'catalogo:produtos' %}" class="btn btn-link btn-sm text-decoration-none p-0 fw-semibold">
+                    Produtos <i class="bi bi-chevron-right small"></i>
+                </a>
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                    {% for item in produtos_estoque_baixo %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center py-3 border-light-subtle">
+                            <div>
+                                <div class="fw-semibold text-dark small">{{ item.nome }}</div>
+                                <div class="text-muted extra-small">Mínimo: {{ item.estoque_minimo }} {{ item.get_unidade_display }}</div>
+                            </div>
+                            <span class="badge bg-danger-subtle text-danger rounded-pill px-2 py-1 small">
+                                {{ item.estoque_atual }} {{ item.get_unidade_display }}
+                            </span>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item text-center py-4 border-0">
+                            <i class="bi bi-check-circle-fill text-success fs-3 d-block mb-2"></i>
+                            <span class="fw-semibold text-dark d-block">Estoque 100% Regular</span>
+                            <small class="text-muted">Nenhum produto abaixo do estoque mínimo</small>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Chart.js 4.x -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // Dados injetados pelo Django
+    const mesesLabels = {{ chart_meses_json|safe }};
+    const faturamentoData = {{ chart_faturamento_json|safe }};
+    const statusLabels = {{ chart_status_labels_json|safe }};
+    const statusData = {{ chart_status_data_json|safe }};
+
+    // 1. Gráfico de Faturamento Mensal (Linha Suave com Gradiente)
+    const ctxFaturamento = document.getElementById('faturamentoChart').getContext('2d');
+    
+    // Gradiente azul para a área do gráfico
+    const gradient = ctxFaturamento.createLinearGradient(0, 0, 0, 260);
+    gradient.addColorStop(0, 'rgba(37, 99, 235, 0.3)');
+    gradient.addColorStop(1, 'rgba(37, 99, 235, 0.0)');
+
+    new Chart(ctxFaturamento, {
+        type: 'line',
+        data: {
+            labels: mesesLabels,
+            datasets: [{
+                label: 'Faturamento (R$)',
+                data: faturamentoData,
+                borderColor: '#2563eb',
+                borderWidth: 3,
+                backgroundColor: gradient,
+                fill: true,
+                tension: 0.35,
+                pointBackgroundColor: '#2563eb',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                pointRadius: 5,
+                pointHoverRadius: 7
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let value = context.raw || 0;
+                            return ' Faturamento: R$ ' + value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { display: false }
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return 'R$ ' + value.toLocaleString('pt-BR');
+                        }
+                    },
+                    grid: { color: '#f1f5f9' }
+                }
+            }
+        }
+    });
+
+    // 2. Gráfico de Rosca para Status das Propostas
+    const ctxStatus = document.getElementById('statusChart').getContext('2d');
+    new Chart(ctxStatus, {
+        type: 'doughnut',
+        data: {
+            labels: statusLabels,
+            datasets: [{
+                data: statusData,
+                backgroundColor: [
+                    '#10b981', // Aprovadas (Verde)
+                    '#f59e0b', // Pendentes (Amarelo)
+                    '#ef4444', // Recusadas (Vermelho)
+                    '#64748b'  // Rascunhos (Cinza)
+                ],
+                borderWidth: 2,
+                borderColor: '#ffffff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        boxWidth: 12,
+                        padding: 15,
+                        font: { family: 'Inter', size: 12 }
+                    }
+                }
+            },
+            cutout: '68%'
+        }
+    });
+});
+</script>
+{% endblock %}

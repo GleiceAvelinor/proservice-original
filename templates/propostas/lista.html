@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+
+{% block title %}Propostas Comerciais — {{ current_tenant.name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2 pb-3 mb-4 border-bottom">
+    <div>
+        <h1 class="h2 fw-bold mb-0">Propostas Comerciais</h1>
+        <p class="text-muted small mb-0">Gestão de orçamentos e propostas prestadas</p>
+    </div>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'propostas:criar' %}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i> Nova Proposta
+        </a>
+    </div>
+</div>
+
+<!-- Badges de Resumo e Filtros Rápidos -->
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-6 col-lg-3">
+        <a href="{% url 'propostas:lista' %}?status=PENDENTE" class="text-decoration-none">
+            <div class="card border-0 shadow-sm p-3 {% if status_filtro == 'PENDENTE' %}border border-2 border-warning{% endif %}">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small fw-semibold">Propostas Pendentes</div>
+                        <div class="fs-4 fw-bold text-warning-emphasis">{{ total_pendentes }}</div>
+                    </div>
+                    <i class="bi bi-hourglass-split fs-2 text-warning"></i>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-12 col-md-6 col-lg-3">
+        <a href="{% url 'propostas:lista' %}?status=APROVADA" class="text-decoration-none">
+            <div class="card border-0 shadow-sm p-3 {% if status_filtro == 'APROVADA' %}border border-2 border-success{% endif %}">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small fw-semibold">Propostas Aprovadas</div>
+                        <div class="fs-4 fw-bold text-success">{{ total_aprovadas }}</div>
+                    </div>
+                    <i class="bi bi-check-circle fs-2 text-success"></i>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-12 col-lg-6">
+        <div class="card border-0 shadow-sm p-3 h-100">
+            <form method="get" class="row g-2 align-items-center">
+                <div class="col-12 col-md-8">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                        <input type="text" name="q" value="{{ q }}" class="form-control border-start-0 bg-light" placeholder="Buscar por número ou cliente...">
+                    </div>
+                </div>
+                <div class="col-12 col-md-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-secondary w-100"><i class="bi bi-filter me-1"></i>Filtrar</button>
+                    {% if q or status_filtro %}
+                        <a href="{% url 'propostas:lista' %}" class="btn btn-outline-secondary" title="Limpar filtros"><i class="bi bi-x-lg"></i></a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Tabela de Propostas -->
+<div class="card border-0 shadow-sm rounded-3">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Número</th>
+                    <th>Título / Cliente</th>
+                    <th>Emissão</th>
+                    <th>Validade</th>
+                    <th>Valor Total</th>
+                    <th>Status</th>
+                    <th class="text-end">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in propostas %}
+                    <tr>
+                        <td class="fw-bold">
+                            <a href="{% url 'propostas:detalhe' p.pk %}" class="text-decoration-none text-dark">
+                                {{ p.numero }}
+                            </a>
+                        </td>
+                        <td>
+                            <div class="fw-semibold">{{ p.titulo }}</div>
+                            <div class="text-muted small"><i class="bi bi-building me-1"></i>{{ p.cliente.nome }}</div>
+                        </td>
+                        <td class="text-muted small">{{ p.data_emissao|date:"d/m/Y" }}</td>
+                        <td class="text-muted small">{{ p.data_validade|date:"d/m/Y"|default:"-" }}</td>
+                        <td class="fw-bold text-success">R$ {{ p.total|floatformat:2 }}</td>
+                        <td>
+                            <span class="badge bg-{{ p.get_status_badge_class }}">
+                                {{ p.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm">
+                                <a href="{% url 'propostas:detalhe' p.pk %}" class="btn btn-outline-primary" title="Enviar por E-mail / Ver Detalhes">
+                                    <i class="bi bi-envelope"></i>
+                                </a>
+                                <a href="{{ p.whatsapp_link }}" class="btn btn-outline-success" title="Enviar por WhatsApp" target="_blank">
+                                    <i class="bi bi-whatsapp"></i>
+                                </a>
+                                <a href="{% url 'propostas:pdf' p.pk %}" class="btn btn-outline-danger" title="Baixar PDF" target="_blank">
+                                    <i class="bi bi-file-pdf"></i>
+                                </a>
+                                <a href="{% url 'propostas:detalhe' p.pk %}" class="btn btn-outline-secondary" title="Ver Detalhes">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{% url 'propostas:editar' p.pk %}" class="btn btn-outline-primary" title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="{% url 'propostas:excluir' p.pk %}" class="btn btn-outline-danger" title="Excluir">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-5">
+                            <i class="bi bi-file-earmark-text fs-1 d-block mb-2 text-secondary"></i>
+                            Nenhuma proposta comercial encontrada.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Paginação -->
+{% if is_paginated %}
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page=1{% if q %}&q={{ q }}{% endif %}{% if status_filtro %}&status={{ status_filtro }}{% endif %}">&laquo; Primeiras</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if status_filtro %}&status={{ status_filtro }}{% endif %}">Anterior</a></li>
+            {% endif %}
+
+            <li class="page-item active"><span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span></li>
+
+            {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if status_filtro %}&status={{ status_filtro }}{% endif %}">Próxima</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if q %}&q={{ q }}{% endif %}{% if status_filtro %}&status={{ status_filtro }}{% endif %}">Última &raquo;</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endif %}
+{% endblock %}

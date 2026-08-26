@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Perfil & Logo da Empresa — {{ current_tenant.name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2 pb-3 mb-4 border-bottom">
+    <div>
+        <h1 class="h2 fw-bold mb-0">Configurações da Empresa</h1>
+        <p class="text-muted small mb-0">Gerencie a identidade visual e os dados cadastrais da sua empresa</p>
+    </div>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'dashboard:index' %}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i> Voltar ao Dashboard
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Painel de Logo Atual -->
+    <div class="col-12 col-md-4 col-lg-3">
+        <div class="card border-0 shadow-sm rounded-3 text-center p-4">
+            <h6 class="fw-bold text-muted mb-3">Logo Atual da Empresa</h6>
+            <div class="d-flex align-items-center justify-content-center bg-light rounded-4 p-3 mb-3" style="min-height: 140px;">
+                {% if current_tenant.logo %}
+                    <img src="{{ current_tenant.logo.url }}" alt="{{ current_tenant.name }}" class="img-fluid rounded" style="max-height: 100px;">
+                {% else %}
+                    <div class="text-muted">
+                        <i class="bi bi-image fs-1 d-block mb-1"></i>
+                        <span class="small">Nenhuma logo enviada</span>
+                    </div>
+                {% endif %}
+            </div>
+            <p class="text-muted small mb-0">
+                A logo é exibida no Login, no cabeçalho e nas Propostas Comerciais em PDF.
+            </p>
+
+            <!-- Aviso de Restrição para usuários sem permissão -->
+            {% if user_is_saas_admin %}
+                <div class="alert alert-success rounded-3 text-start mt-3 small mb-0 p-2">
+                    <i class="bi bi-shield-check-fill text-success me-1"></i>
+                    <strong>Admin Global do SaaS.</strong> Você pode alterar a logo abaixo.
+                </div>
+            {% else %}
+                <div class="alert alert-warning rounded-3 text-start mt-3 small mb-0 p-2">
+                    <i class="bi bi-shield-lock-fill text-warning me-1"></i>
+                    <strong>Logo protegida.</strong><br>
+                    Somente o <em>Administrador Global do SaaS</em> pode alterar a logomarca desta empresa.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Formulário de Dados & Logo -->
+    <div class="col-12 col-md-8 col-lg-9">
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-header bg-white py-3 border-bottom-0">
+                <h5 class="fw-bold mb-0">
+                    <i class="bi bi-building-gear text-primary me-2"></i>Informações da Empresa
+                    {% if request.user.is_superuser %}
+                        <span class="badge bg-primary-subtle text-primary fw-semibold ms-2 small">& Upload de Logo</span>
+                    {% endif %}
+                </h5>
+            </div>
+            <div class="card-body pt-0">
+                {% crispy form %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

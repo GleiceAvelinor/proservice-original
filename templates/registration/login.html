@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Login — {% if current_tenant %}{{ current_tenant.name }}{% else %}SaaS{% endif %}{% endblock %}
+
+{% block full_content %}
+<div class="row justify-content-center align-items-center min-vh-80">
+    <div class="col-md-5 col-lg-4">
+        <div class="card shadow-lg border-0 rounded-4">
+            <div class="card-body p-4 p-sm-5">
+                <div class="text-center mb-4">
+                    {% if current_tenant and current_tenant.logo %}
+                        <img src="{{ current_tenant.logo.url }}" alt="{{ current_tenant.name }}" height="60" class="mb-3">
+                    {% else %}
+                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                            <i class="bi bi-building fs-2"></i>
+                        </div>
+                    {% endif %}
+                    <h3 class="fw-bold">{% if current_tenant %}{{ current_tenant.name }}{% else %}Acesso ao Sistema{% endif %}</h3>
+                    <p class="text-muted small">Digite suas credenciais para entrar no portal</p>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+
+                    <div class="text-end mb-3 mt-1">
+                        <a href="{% url 'accounts:password_reset' %}" class="text-decoration-none small text-primary fw-medium">
+                            <i class="bi bi-key me-1"></i>Esqueci minha senha
+                        </a>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-2 fw-bold rounded-3 shadow-sm">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Entrar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

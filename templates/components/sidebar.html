@@ -1,0 +1,50 @@
+<div class="position-sticky pt-3">
+    <ul class="nav flex-column">
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.app_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard:index' %}">
+                <i class="bi bi-speedometer2"></i> Dashboard
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.app_name == 'propostas' %}active{% endif %}" href="{% url 'propostas:lista' %}">
+                <i class="bi bi-file-earmark-text"></i> Propostas Comerciais
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.app_name == 'clientes' %}active{% endif %}" href="{% url 'clientes:lista' %}">
+                <i class="bi bi-people"></i> Clientes
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'produtos' or request.resolver_match.url_name == 'produto-criar' %}active{% endif %}" href="{% url 'catalogo:produtos' %}">
+                <i class="bi bi-box-seam"></i> Produtos
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'servicos' or request.resolver_match.url_name == 'servico-criar' %}active{% endif %}" href="{% url 'catalogo:servicos' %}">
+                <i class="bi bi-tools"></i> Serviços
+            </a>
+        </li>
+        <li class="nav-item border-top mt-2 pt-2">
+            <a class="nav-link {% if request.resolver_match.app_name == 'tenants' %}active{% endif %}" href="{% url 'tenants:empresa-config' %}">
+                <i class="bi bi-building-gear"></i> Minha Empresa & Logo
+            </a>
+        </li>
+    </ul>
+
+    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase fs-7">
+        <span>Empresa Ativa</span>
+    </h6>
+    <div class="px-3 py-2 text-muted small">
+        {% if current_tenant %}
+            <div class="fw-bold text-dark">{{ current_tenant.name }}</div>
+            <div>CNPJ: {{ current_tenant.cnpj|default:"Não informado" }}</div>
+            <div>Tel: {{ current_tenant.phone|default:"-" }}</div>
+            <a href="{% url 'tenants:empresa-config' %}" class="btn btn-outline-primary btn-sm mt-2 w-100">
+                <i class="bi bi-pencil-square me-1"></i> Alterar Logo
+            </a>
+        {% else %}
+            <div>Nenhum tenant ativo</div>
+        {% endif %}
+    </div>
+</div>

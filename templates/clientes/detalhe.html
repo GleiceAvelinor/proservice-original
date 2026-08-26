@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ cliente.nome }} — Clientes{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2 pb-3 mb-4 border-bottom">
+    <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <h1 class="h2 fw-bold mb-0">{{ cliente.nome }}</h1>
+            <span class="badge {% if cliente.ativo %}bg-success-subtle text-success{% else %}bg-danger-subtle text-danger{% endif %}">
+                {% if cliente.ativo %}Ativo{% else %}Inativo{% endif %}
+            </span>
+        </div>
+        <p class="text-muted small mb-0">Cadastrado em {{ cliente.created_at|date:"d/m/Y H:i" }}</p>
+    </div>
+    <div class="btn-toolbar mb-2 mb-md-0 gap-2">
+        <a href="{% url 'clientes:lista' %}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i> Voltar
+        </a>
+        <a href="{% url 'clientes:editar' cliente.pk %}" class="btn btn-primary btn-sm">
+            <i class="bi bi-pencil me-1"></i> Editar Cliente
+        </a>
+    </div>
+</div>
+
+<!-- KPIs Financeiros do Cliente -->
+<div class="row g-4 mb-4">
+    <div class="col-12 col-sm-6">
+        <div class="stat-card p-3">
+            <div class="d-flex align-items-center">
+                <div class="stat-icon bg-success-subtle text-success me-3">
+                    <i class="bi bi-cash-stack"></i>
+                </div>
+                <div>
+                    <div class="text-muted small fw-semibold">Total Aprovado / Faturado</div>
+                    <div class="fs-4 fw-bold text-dark">R$ {{ total_faturado|floatformat:2 }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6">
+        <div class="stat-card p-3">
+            <div class="d-flex align-items-center">
+                <div class="stat-icon bg-primary-subtle text-primary me-3">
+                    <i class="bi bi-file-earmark-text"></i>
+                </div>
+                <div>
+                    <div class="text-muted small fw-semibold">Histórico de Propostas</div>
+                    <div class="fs-4 fw-bold text-dark">{{ total_propostas }} propostas</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Dados do Cliente -->
+    <div class="col-12 col-lg-5">
+        <div class="card border-0 shadow-sm rounded-3 mb-4">
+            <div class="card-header bg-white py-3 border-bottom-0">
+                <h5 class="fw-bold mb-0"><i class="bi bi-person-vcard text-primary me-2"></i>Informações Gerais</h5>
+            </div>
+            <div class="card-body pt-0">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item px-0 d-flex justify-content-between">
+                        <span class="text-muted">Tipo:</span>
+                        <span class="fw-semibold">{{ cliente.get_tipo_display }}</span>
+                    </li>
+                    <li class="list-group-item px-0 d-flex justify-content-between">
+                        <span class="text-muted">CPF / CNPJ:</span>
+                        <span class="fw-semibold">{{ cliente.cpf_cnpj|default:"Não informado" }}</span>
+                    </li>
+                    <li class="list-group-item px-0 d-flex justify-content-between">
+                        <span class="text-muted">E-mail:</span>
+                        <span class="fw-semibold">{{ cliente.email|default:"Não informado" }}</span>
+                    </li>
+                    <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                        <span class="text-muted">Telefone:</span>
+                        <div>
+                            <span class="fw-semibold me-2">{{ cliente.telefone|default:"Não informado" }}</span>
+                            {% if cliente.telefone_whatsapp %}
+                                <a href="https://api.whatsapp.com/send?phone={{ cliente.telefone_whatsapp }}" target="_blank" class="btn btn-sm btn-outline-success py-0 px-2" title="Abrir conversa no WhatsApp">
+                                    <i class="bi bi-whatsapp me-1"></i> WhatsApp
+                                </a>
+                            {% endif %}
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-header bg-white py-3 border-bottom-0">
+                <h5 class="fw-bold mb-0"><i class="bi bi-geo-alt text-primary me-2"></i>Endereço</h5>
+            </div>
+            <div class="card-body pt-0">
+                {% if cliente.logradouro or cliente.cidade %}
+                    <p class="mb-1"><strong>{{ cliente.logradouro|default:"" }}</strong>, {{ cliente.numero|default:"s/n" }}</p>
+                    {% if cliente.complemento %}<p class="text-muted small mb-1">Comp: {{ cliente.complemento }}</p>{% endif %}
+                    <p class="mb-1">{{ cliente.bairro|default:"" }} — {{ cliente.cidade|default:"" }}/{{ cliente.estado|default:"" }}</p>
+                    <p class="text-muted small mb-0">CEP: {{ cliente.cep|default:"-" }}</p>
+                {% else %}
+                    <p class="text-muted mb-0">Nenhum endereço cadastrado.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Histórico de Propostas -->
+    <div class="col-12 col-lg-7">
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom-0">
+                <h5 class="fw-bold mb-0"><i class="bi bi-file-earmark-text text-primary me-2"></i>Propostas Vinculadas</h5>
+                <a href="{% url 'propostas:criar' %}?cliente={{ cliente.pk }}" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-plus-lg me-1"></i> Nova Proposta
+                </a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Número</th>
+                            <th>Emissão</th>
+                            <th>Valor Total</th>
+                            <th>Status</th>
+                            <th class="text-end">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in propostas %}
+                            <tr>
+                                <td class="fw-semibold">{{ p.numero }}</td>
+                                <td class="text-muted small">{{ p.data_emissao|date:"d/m/Y" }}</td>
+                                <td class="fw-bold">R$ {{ p.total|floatformat:2 }}</td>
+                                <td>
+                                    <span class="badge bg-{{ p.get_status_badge_class }}">
+                                        {{ p.get_status_display }}
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <a href="{% url 'propostas:detalhe' p.pk %}" class="btn btn-outline-primary btn-sm" title="Ver Proposta">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">Nenhuma proposta vinculada a este cliente.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

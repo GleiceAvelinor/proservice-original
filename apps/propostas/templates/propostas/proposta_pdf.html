@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Proposta Comercial {{ proposta.numero }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1.5cm;
+            @bottom-right {
+                content: "Página " counter(page) " de " counter(pages);
+                font-family: 'Helvetica', Arial, sans-serif;
+                font-size: 8pt;
+                color: #718096;
+            }
+        }
+        body {
+            font-family: 'Helvetica', Arial, sans-serif;
+            color: #2d3748;
+            line-height: 1.5;
+            font-size: 10pt;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            width: 100%;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #3182ce;
+            padding-bottom: 15px;
+        }
+        .header table {
+            width: 100%;
+        }
+        .company-name {
+            font-size: 20pt;
+            font-weight: bold;
+            color: #2b6cb0;
+            margin: 0;
+        }
+        .company-info {
+            font-size: 9pt;
+            color: #4a5568;
+        }
+        .proposal-title {
+            text-align: right;
+        }
+        .proposal-number {
+            font-size: 16pt;
+            font-weight: bold;
+            color: #2d3748;
+        }
+        .proposal-date {
+            font-size: 9pt;
+            color: #718096;
+        }
+        .info-box {
+            width: 100%;
+            margin-bottom: 25px;
+        }
+        .info-box table {
+            width: 100%;
+        }
+        .info-card {
+            background-color: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 12px;
+        }
+        .card-title {
+            font-weight: bold;
+            color: #4a5568;
+            font-size: 9pt;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+        }
+        .items-table th {
+            background-color: #ebf8ff;
+            color: #2b6cb0;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 8pt;
+            padding: 10px 8px;
+            text-align: left;
+            border-bottom: 2px solid #bee3f8;
+        }
+        .items-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 9.5pt;
+        }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        
+        .totals-table {
+            width: 40%;
+            margin-left: auto;
+            margin-bottom: 30px;
+        }
+        .totals-table td {
+            padding: 6px 8px;
+            font-size: 10pt;
+        }
+        .total-row {
+            font-weight: bold;
+            font-size: 12pt;
+            color: #2b6cb0;
+            border-top: 2px solid #3182ce;
+        }
+        .terms-box {
+            background-color: #fffaf0;
+            border-left: 4px solid #dd6b20;
+            padding: 12px;
+            font-size: 9pt;
+            margin-bottom: 30px;
+        }
+        .signature-area {
+            margin-top: 50px;
+            width: 100%;
+        }
+        .signature-line {
+            border-top: 1px solid #a0aec0;
+            width: 80%;
+            margin: 0 auto;
+            text-align: center;
+            padding-top: 5px;
+            font-size: 9pt;
+            color: #4a5568;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Cabeçalho -->
+    <div class="header">
+        <table>
+            <tr>
+                <td style="width: 60%;">
+                    <div class="company-name">{{ tenant.name|default:"Prestador de Serviços" }}</div>
+                    <div class="company-info">
+                        {% if tenant.cnpj %}CNPJ: {{ tenant.cnpj }}<br>{% endif %}
+                        {% if tenant.email %}E-mail: {{ tenant.email }} | {% endif %}
+                        {% if tenant.phone %}Tel: {{ tenant.phone }}{% endif %}
+                        {% if tenant.address %}<br>{{ tenant.address }}{% endif %}
+                    </div>
+                </td>
+                <td class="proposal-title" style="width: 40%;">
+                    <div class="proposal-number">{{ proposta.numero }}</div>
+                    <div class="proposal-date">Emissão: {{ proposta.data_emissao|date:"d/m/Y" }}</div>
+                    {% if proposta.data_validade %}
+                        <div class="proposal-date">Válida até: {{ proposta.data_validade|date:"d/m/Y" }}</div>
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Título da Proposta se houver -->
+    {% if proposta.titulo %}
+        <div style="margin-bottom: 20px;">
+            <h2 style="font-size: 14pt; color: #2d3748; margin: 0;">{{ proposta.titulo }}</h2>
+        </div>
+    {% endif %}
+
+    <!-- Dados do Cliente -->
+    <div class="info-box">
+        <div class="info-card">
+            <div class="card-title">Cliente / Destinatário</div>
+            <div style="font-size: 11pt; font-weight: bold; color: #2d3748;">{{ proposta.cliente.nome }}</div>
+            <div class="company-info">
+                {% if proposta.cliente.cpf_cnpj %}CPF/CNPJ: {{ proposta.cliente.cpf_cnpj }}<br>{% endif %}
+                {% if proposta.cliente.email %}E-mail: {{ proposta.cliente.email }} | {% endif %}
+                {% if proposta.cliente.telefone %}Telefone: {{ proposta.cliente.telefone }}{% endif %}
+                {% if proposta.cliente.endereco_completo %}<br>Endereço: {{ proposta.cliente.endereco_completo }}{% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela de Itens -->
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th style="width: 5%;">#</th>
+                <th style="width: 45%;">Descrição do Item / Serviço</th>
+                <th class="text-center" style="width: 10%;">Qtd</th>
+                <th class="text-center" style="width: 10%;">Unid</th>
+                <th class="text-right" style="width: 15%;">Preço Unit.</th>
+                <th class="text-right" style="width: 15%;">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in itens %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>
+                        <strong>{{ item.descricao }}</strong>
+                        {% if item.tipo == 'PRODUTO' and item.produto %}
+                            <br><span style="font-size: 8pt; color: #718096;">[Produto SKU: {{ item.produto.codigo|default:"-" }}]</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">{{ item.quantidade }}</td>
+                    <td class="text-center">{{ item.unidade }}</td>
+                    <td class="text-right">R$ {{ item.preco_unitario|floatformat:2 }}</td>
+                    <td class="text-right"><strong>R$ {{ item.total|floatformat:2 }}</strong></td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">Nenhum item cadastrado nesta proposta.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Totais -->
+    <table class="totals-table">
+        <tr>
+            <td>Subtotal:</td>
+            <td class="text-right">R$ {{ proposta.subtotal|floatformat:2 }}</td>
+        </tr>
+        {% if proposta.desconto > 0 %}
+            <tr>
+                <td style="color: #e53e3e;">Desconto ({{ proposta.desconto }}%):</td>
+                <td class="text-right" style="color: #e53e3e;">- R$ {{ proposta.valor_desconto|floatformat:2 }}</td>
+            </tr>
+        {% endif %}
+        <tr class="total-row">
+            <td>VALOR TOTAL:</td>
+            <td class="text-right">R$ {{ proposta.total|floatformat:2 }}</td>
+        </tr>
+    </table>
+
+    <!-- Condições de Pagamento e Observações -->
+    {% if proposta.condicao_pagamento or proposta.observacoes %}
+        <div class="terms-box">
+            {% if proposta.condicao_pagamento %}
+                <div style="font-weight: bold; margin-bottom: 4px;">Condições de Pagamento:</div>
+                <div style="margin-bottom: 8px;">{{ proposta.condicao_pagamento }}</div>
+            {% endif %}
+            {% if proposta.observacoes %}
+                <div style="font-weight: bold; margin-bottom: 4px;">Observações / Garantias:</div>
+                <div>{{ proposta.observacoes|linebreaksbr }}</div>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <!-- Área de Assinaturas -->
+    <table class="signature-area">
+        <tr>
+            <td style="width: 50%;">
+                <div class="signature-line">
+                    {{ tenant.name|default:"Empresa Prestadora" }}<br>
+                    <span style="font-size: 8pt; color: #a0aec0;">Responsável Comercial</span>
+                </div>
+            </td>
+            <td style="width: 50%;">
+                <div class="signature-line">
+                    {{ proposta.cliente.nome }}<br>
+                    <span style="font-size: 8pt; color: #a0aec0;">De Acordo / Aceite do Cliente</span>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>

@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Portal de Acesso — Selecione sua Empresa{% endblock %}
+
+{% block full_content %}
+<div class="container py-5">
+    <div class="row justify-content-center mb-4">
+        <div class="col-lg-8 text-center">
+            <span class="badge bg-primary-subtle text-primary fw-bold px-3 py-2 rounded-pill mb-3">Portal de Login Multi-Tenant</span>
+            <h1 class="fw-bold display-5 text-dark mb-2">Acessar Minha Empresa</h1>
+            <p class="text-muted lead">Selecione a sua empresa na lista abaixo para acessar o painel de login seguro.</p>
+        </div>
+    </div>
+
+    <!-- Campo de Busca Rápida -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 p-2 bg-white">
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent border-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" id="tenantSearch" class="form-control border-0 shadow-none" placeholder="Buscar por nome ou subdomínio...">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de Empresas Cadastradas -->
+    <div class="row g-4 justify-content-center" id="tenantsGrid">
+        {% for tenant in tenants %}
+            {% with primary_domain=tenant.domains.first %}
+                <div class="col-12 col-md-6 col-lg-4 tenant-card-item">
+                    <div class="card border-0 shadow-sm rounded-4 h-100 p-4 text-center card-hover bg-white">
+                        <div class="d-flex align-items-center justify-content-center mb-3">
+                            {% if tenant.logo %}
+                                <img src="{{ tenant.logo.url }}" alt="{{ tenant.name }}" height="50" class="rounded p-1 bg-light">
+                            {% else %}
+                                <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                    <i class="bi bi-building fs-3"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <h5 class="fw-bold text-dark mb-1 tenant-name">{{ tenant.name }}</h5>
+                        <p class="text-muted small mb-3 tenant-domain">
+                            <i class="bi bi-globe me-1"></i>
+                            {% if primary_domain %}{{ primary_domain.domain }}{% else %}{{ tenant.schema_name }}.{{ base_domain }}{% endif %}
+                        </p>
+
+                        <div class="mt-auto">
+                            {% if primary_domain %}
+                                <a href="http://{{ primary_domain.domain }}:8000/accounts/login/" class="btn btn-primary w-100 rounded-pill py-2 fw-semibold">
+                                    <i class="bi bi-box-arrow-in-right me-1"></i> Entrar no Painel
+                                </a>
+                            {% else %}
+                                <a href="http://{{ tenant.schema_name }}.{{ base_domain }}:8000/accounts/login/" class="btn btn-primary w-100 rounded-pill py-2 fw-semibold">
+                                    <i class="bi bi-box-arrow-in-right me-1"></i> Entrar no Painel
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endwith %}
+        {% empty %}
+            <div class="col-12 text-center py-5">
+                <div class="text-muted">
+                    <i class="bi bi-building-x fs-1 d-block mb-3"></i>
+                    <h5>Nenhuma empresa cadastrada ainda</h5>
+                    <p class="small">Seja a primeira empresa a se cadastrar na nossa plataforma!</p>
+                    <a href="{% url 'signup:signup' %}" class="btn btn-primary rounded-pill px-4 py-2 mt-2">
+                        <i class="bi bi-plus-circle me-1"></i> Cadastrar Minha Empresa
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- CTA de Novo Cadastro -->
+    <div class="row justify-content-center mt-5">
+        <div class="col-lg-8 text-center bg-light p-4 rounded-4">
+            <h5 class="fw-bold mb-2">Sua empresa ainda não tem conta?</h5>
+            <p class="text-muted small mb-3">Crie sua conta em menos de 1 minuto e comece a emitir propostas profissionais hoje mesmo.</p>
+            <a href="{% url 'signup:signup' %}" class="btn btn-outline-primary rounded-pill px-4 fw-semibold">
+                <i class="bi bi-rocket-takeoff me-1"></i> Criar Nova Conta de Empresa
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("tenantSearch");
+    if (!searchInput) return;
+
+    searchInput.addEventListener("keyup", function () {
+        const term = this.value.toLowerCase().trim();
+        const items = document.querySelectorAll(".tenant-card-item");
+
+        items.forEach(item => {
+            const name = item.querySelector(".tenant-name")?.textContent.toLowerCase() || "";
+            const domain = item.querySelector(".tenant-domain")?.textContent.toLowerCase() || "";
+            if (name.includes(term) || domain.includes(term)) {
+                item.style.display = "";
+            } else {
+                item.style.display = "none";
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
