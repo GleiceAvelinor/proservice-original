@@ -10,7 +10,7 @@ echo "⏳ Aguardando banco de dados PostgreSQL ($DB_HOST:$DB_PORT)..."
 python << END
 import sys, time, socket
 host = "$DB_HOST"
-port = int("$DB_PORT" or 5432)
+port = int("$DB_PORT" or 6453)
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 while True:
     try:
