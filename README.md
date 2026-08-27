@@ -481,7 +481,7 @@ No arquivo [`.env`](file:///c:/Users/ednar/OneDrive/Documentos/saas/.env), alter
 DB_NAME=postgres
 DB_USER=postgres.sua_id_do_projeto
 DB_PASSWORD=sua_senha_do_supabase
-DB_HOST=aws-0-sa-east-1.pooler.supabase.com # ou seu host do Supabase
+DB_HOST=aws-0-sa-east-2.pooler.supabase.com # ou seu host do Supabase
 DB_PORT=6543
 DB_SSLMODE=require
 ```
