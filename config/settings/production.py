@@ -35,3 +35,8 @@ LOGGING = {
         "level": "WARNING",
     },
 }
+DATABASES["default"]["OPTIONS"] = {
+    "sslmode": "require",
+    "target_session_attrs": "read-write",
+    "application_name": "django-tenants",
+}
