@@ -131,7 +131,7 @@ DATABASES = {
         "USER": config("DB_USER", default="postgres"),
         "PASSWORD": config("DB_PASSWORD", default=""),
         "HOST": config("DB_HOST", default="db.eqxmdhswclhiirjxvyhj.supabase.co"),
-        "PORT": config("DB_PORT", default="5432"),
+        "PORT": config("DB_PORT", default="6543"),
         "OPTIONS": {
             "sslmode": config("DB_SSLMODE", default="require"),
         },
