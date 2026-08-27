@@ -30,5 +30,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copia o restante do código
+# (Mantenha todo o seu bloco anterior de FROM, ENV, WORKDIR, apt-get e pip install)
+
 COPY . /app/
+
+# Porta padrão que o Render substitui via variável de ambiente do sistema
+ENV PORT=10000
+EXPOSE 10000
+
+# Comando para iniciar a aplicação via Gunicorn usando a porta dinâmica do Render
+CMD ["sh", "-c", "gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 3"]

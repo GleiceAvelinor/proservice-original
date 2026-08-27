@@ -4,6 +4,7 @@ Settings de PRODUÇÃO — nunca use DEBUG=True em produção.
 from pathlib import Path
 from .base import *  # noqa: F401, F403
 
+
 DEBUG = False
 
 # Segurança extra para produção
