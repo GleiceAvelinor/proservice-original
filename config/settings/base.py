@@ -130,8 +130,8 @@ DATABASES = {
         "NAME": config("DB_NAME", default="postgres"),
         "USER": config("DB_USER", default="postgres"),
         "PASSWORD": config("DB_PASSWORD", default=""),
-        "HOST": config("DB_HOST", default="aws-0-sa-east-1.supabase.com"),
-        "PORT": config("DB_PORT", default="5432"),
+        "HOST": config("DB_HOST", default="aws-0-us-west-2.pooler.supabase.com"),
+        "PORT": config("DB_PORT", default="6543"),
         "OPTIONS": {
             "sslmode": config("DB_SSLMODE", default="require"),
         },
