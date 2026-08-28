@@ -63,6 +63,8 @@ TENANT_APPS = [
     "apps.propostas",
     "apps.dashboard",
     "apps.accounts",
+    "apps.signup",
+    "apps.tenants",
 ]
 
 # django-tenants exige que INSTALLED_APPS seja a união de SHARED + TENANT,
