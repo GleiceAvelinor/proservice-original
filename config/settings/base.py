@@ -15,7 +15,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent  # raiz do projeto
 # ─── Segurança ─────────────────────────────────────────────────────────────────
 SECRET_KEY = config("SECRET_KEY", default="django-insecure-saas-multi-tenant-dev-key-change-in-production-123456789")
 DEBUG = config("DEBUG", default=False, cast=bool)
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "gestaoproservice.onrender.com"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", ".onrender.com","gestaoproservice.onrender.com"]
 
 # ─── django-tenants: DATABASE_ROUTERS ─────────────────────────────────────────
 # Obrigatório para o roteamento multi-schema funcionar corretamente
@@ -126,19 +126,31 @@ ASGI_APPLICATION = "config.asgi.application"
 
 # ─── Banco de Dados ────────────────────────────────────────────────────────────
 # django-tenants EXIGE que o ENGINE seja django_tenants.postgresql_backend
+# ─── Banco de Dados ────────────────────────────────────────────────────────────
+import dj_database_url
+
+# Tenta ler a DATABASE_URL completa (padrão do Render / Supabase)
 DATABASES = {
-    "default": {
+    "default": dj_database_url.config(
+        default=config("DATABASE_URL", default=""),
+        engine="django_tenants.postgresql_backend"
+    )
+}
+
+# Se a DATABASE_URL não estiver definida, usa as variáveis separadas (DB_HOST, DB_USER, etc.)
+if not DATABASES["default"].get("HOST") and not config("DATABASE_URL", default=""):
+    DATABASES["default"] = {
         "ENGINE": "django_tenants.postgresql_backend",
         "NAME": config("DB_NAME", default="postgres"),
-        "USER": config("DB_USER", default="postgres.yunpmwlgabtmrnywdkyg"),
+        "USER": config("DB_USER", default="postgres"),
         "PASSWORD": config("DB_PASSWORD", default=""),
-        "HOST": config("DB_HOST", default=""),
+        "HOST": config("DB_HOST", default="localhost"),
         "PORT": config("DB_PORT", default="5432"),
-        "OPTIONS": {
-            "sslmode": config("DB_SSLMODE", default="require"),
-        },
     }
-}
+
+# Garante as opções de SSL exigidas pelo Supabase/Produção
+DATABASES["default"].setdefault("OPTIONS", {})
+DATABASES["default"]["OPTIONS"].setdefault("sslmode", config("DB_SSLMODE", default="require"))
 
 # ─── Autenticação ──────────────────────────────────────────────────────────────
 AUTH_PASSWORD_VALIDATORS = [
