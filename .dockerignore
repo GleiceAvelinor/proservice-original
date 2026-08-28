@@ -20,6 +20,6 @@ venv.bak/
 
 # Media & Temp
 media/
-staticfiles/
+
 *.log
 *.sqlite3
