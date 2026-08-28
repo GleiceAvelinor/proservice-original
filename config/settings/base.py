@@ -128,7 +128,7 @@ DATABASES = {
     "default": {
         "ENGINE": "django_tenants.postgresql_backend",
         "NAME": config("DB_NAME", default="postgres"),
-        "USER": config("DB_USER", default="postgres"),
+        "USER": config("DB_USER", default="postgres.yunpmwlgabtmrnywdkyg"),
         "PASSWORD": config("DB_PASSWORD", default=""),
         "HOST": config("DB_HOST", default=""),
         "PORT": config("DB_PORT", default="5432"),
